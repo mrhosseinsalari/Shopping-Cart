@@ -1,6 +1,6 @@
 import { productsData } from "./products.js";
 
-const cart = [];
+let cart = [];
 
 const cartBtn = document.querySelector(".cart-btn");
 const cartModal = document.querySelector(".cart");
@@ -49,7 +49,7 @@ class UI {
     const buttons = [...addToCartBtns];
 
     buttons.forEach((btn) => {
-      const id = btn.dataset.id;
+      const id = Number(btn.dataset.id);
 
       // check if this product id is in cart or not !
       const isInCart = cart.find((product) => product.id === id);
@@ -60,9 +60,17 @@ class UI {
       }
 
       btn.addEventListener("click", (event) => {
+        btn.innerText = "In Cart";
+        btn.disabled = true;
+
         // get product from products
+        const addedProduct = Storage.getProduct(id);
+
         // add to cart
+        cart = [...cart, { ...addedProduct, quantity: 1 }];
+
         // save cart to local storage
+        Storage.saveCart(cart);
       });
     });
   }
@@ -73,6 +81,15 @@ class UI {
 class Storage {
   static saveProducts(products) {
     localStorage.setItem("products", JSON.stringify(products));
+  }
+
+  static getProduct(id) {
+    const _products = JSON.parse(localStorage.getItem("products"));
+    return _products.find((p) => p.id === id);
+  }
+
+  static saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
 }
 
