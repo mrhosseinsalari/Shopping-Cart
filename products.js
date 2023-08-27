@@ -7,7 +7,7 @@ export const productsData = [
   },
   {
     id: 2,
-    title: "saheb panel bed",
+    title: "test panel bed",
     price: 14.99,
     imageUrl: "./images/product-2.jpeg",
   },

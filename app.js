@@ -1,5 +1,7 @@
 import { productsData } from "./products.js";
 
+const cart = [];
+
 const cartBtn = document.querySelector(".cart-btn");
 const cartModal = document.querySelector(".cart");
 const backDrop = document.querySelector(".backdrop");
@@ -41,6 +43,29 @@ class UI {
 
     productsDOM.innerHTML = result;
   }
+
+  getAddToCartBtns() {
+    const addToCartBtns = document.querySelectorAll(".add-to-cart");
+    const buttons = [...addToCartBtns];
+
+    buttons.forEach((btn) => {
+      const id = btn.dataset.id;
+
+      // check if this product id is in cart or not !
+      const isInCart = cart.find((product) => product.id === id);
+
+      if (isInCart) {
+        btn.innerText = "In Cart";
+        btn.disabled = true;
+      }
+
+      btn.addEventListener("click", (event) => {
+        // get product from products
+        // add to cart
+        // save cart to local storage
+      });
+    });
+  }
 }
 
 // 3. storage
@@ -57,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const ui = new UI();
   ui.displayProducts(productsData);
+  ui.getAddToCartBtns();
 
   Storage.saveProducts(productsData);
 });
