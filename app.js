@@ -10,6 +10,7 @@ const closeModal = document.querySelector(".cart-item-confirm");
 const productsDOM = document.querySelector(".products-center");
 const cartTotal = document.querySelector(".cart-total");
 const cartItems = document.querySelector(".cart-items");
+const cartContent = document.querySelector(".cart-content");
 
 // 1. get products
 
@@ -57,25 +58,28 @@ class UI {
       const isInCart = cart.find((product) => product.id === id);
 
       if (isInCart) {
-        btn.innerText = "In Cart";
+        btn.innerHTML = "In Cart";
         btn.disabled = true;
       }
 
       btn.addEventListener("click", (event) => {
-        btn.innerText = "In Cart";
+        btn.innerHTML = "In Cart";
         btn.disabled = true;
 
         // get product from products
-        const addedProduct = Storage.getProduct(id);
+        const addedProduct = { ...Storage.getProduct(id), quantity: 1 };
 
         // add to cart
-        cart = [...cart, { ...addedProduct, quantity: 1 }];
+        cart = [...cart, addedProduct];
 
         // save cart to local storage
         Storage.saveCart(cart);
 
         // update cart value
         this.setCartValue(cart);
+
+        // add to cart item
+        this.addCartItem(addedProduct);
       });
     });
   }
@@ -90,6 +94,36 @@ class UI {
 
     cartTotal.innerText = `total price : ${totalPrice.toFixed(2)} $`;
     cartItems.innerText = tempCartItems;
+  }
+
+  addCartItem(cartItem) {
+    const div = document.createElement("div");
+    div.classList.add("cart-item");
+    div.innerHTML = `
+    <img class="cart-item-img" src=${cartItem.imageUrl} />
+    <div class="cart-item-desc">
+      <h4>${cartItem.title}</h4>
+      <h5>$ ${cartItem.price}</h5>
+    </div>
+    <div class="cart-item-conteoller">
+      <i class="fas fa-chevron-up"></i>
+      <p>${cartItem.quantity}</p>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+    <i class="far fa-trash-alt"></i>`;
+
+    cartContent.appendChild(div);
+  }
+
+  setupApp() {
+    // get cart from storage
+    cart = Storage.getCart() || [];
+
+    // add to cart item
+    cart.forEach((cartItem) => this.addCartItem(cartItem));
+
+    // set cart value
+    this.setCartValue(cart);
   }
 }
 
@@ -108,6 +142,10 @@ class Storage {
   static saveCart(cart) {
     localStorage.setItem("cart", JSON.stringify(cart));
   }
+
+  static getCart() {
+    return JSON.parse(localStorage.getItem("cart"));
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -115,6 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const productsData = products.getProducts();
 
   const ui = new UI();
+
+  // set up : get cart and set up app :
+  ui.setupApp();
+
   ui.displayProducts(productsData);
   ui.getAddToCartBtns();
 
