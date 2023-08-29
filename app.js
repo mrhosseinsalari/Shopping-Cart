@@ -11,6 +11,7 @@ const productsDOM = document.querySelector(".products-center");
 const cartTotal = document.querySelector(".cart-total");
 const cartItems = document.querySelector(".cart-items");
 const cartContent = document.querySelector(".cart-content");
+const clearCart = document.querySelector(".clear-cart");
 
 // 1. get products
 
@@ -125,6 +126,25 @@ class UI {
     // set cart value
     this.setCartValue(cart);
   }
+
+  cartLogic() {
+    // clear cart :
+    clearCart.addEventListener("click", () => {
+      // remove : Don't Repeat Yourself (DRY)
+      cart.forEach((item) => this.removeCartItem(item.id));
+    });
+  }
+
+  removeCartItem(id) {
+    // update cart
+    cart = cart.filter((cItem) => cItem.id !== id);
+
+    // update cart values
+    this.setCartValue(cart);
+
+    // update storage
+    Storage.saveCart(cart);
+  }
 }
 
 // 3. storage
@@ -159,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ui.displayProducts(productsData);
   ui.getAddToCartBtns();
+  ui.cartLogic();
 
   Storage.saveProducts(productsData);
 });
