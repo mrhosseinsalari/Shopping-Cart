@@ -1,6 +1,7 @@
 import { productsData } from "./products.js";
 
 let cart = [];
+let buttonsDOM = [];
 
 const cartBtn = document.querySelector(".cart-btn");
 const cartModal = document.querySelector(".cart");
@@ -39,7 +40,6 @@ class UI {
            <p class="product-title">${product.title}</p>
          </div>
          <button class="btn add-to-cart" data-id=${product.id}>
-           <i class="fas fa-shopping-cart"></i>
            add to cart
          </button>
        </div>`;
@@ -49,22 +49,22 @@ class UI {
   }
 
   getAddToCartBtns() {
-    const addToCartBtns = document.querySelectorAll(".add-to-cart");
-    const buttons = [...addToCartBtns];
+    const addToCartBtns = [...document.querySelectorAll(".add-to-cart")];
+    buttonsDOM = addToCartBtns;
 
-    buttons.forEach((btn) => {
+    addToCartBtns.forEach((btn) => {
       const id = Number(btn.dataset.id);
 
       // check if this product id is in cart or not !
       const isInCart = cart.find((product) => product.id === id);
 
       if (isInCart) {
-        btn.innerHTML = "In Cart";
+        btn.innerText = "In Cart";
         btn.disabled = true;
       }
 
       btn.addEventListener("click", (event) => {
-        btn.innerHTML = "In Cart";
+        btn.innerText = "In Cart";
         btn.disabled = true;
 
         // get product from products
@@ -107,11 +107,11 @@ class UI {
       <h5>$ ${cartItem.price}</h5>
     </div>
     <div class="cart-item-conteoller">
-      <i class="fas fa-chevron-up"></i>
+      <i class="fas fa-chevron-up" data-id=${cartItem.id}></i>
       <p>${cartItem.quantity}</p>
-      <i class="fas fa-chevron-down"></i>
+      <i class="fas fa-chevron-down" data-id=${cartItem.id}></i>
     </div>
-    <i class="far fa-trash-alt"></i>`;
+    <i class="far fa-trash-alt" data-id=${cartItem.id}></i>`;
 
     cartContent.appendChild(div);
   }
@@ -129,10 +129,17 @@ class UI {
 
   cartLogic() {
     // clear cart :
-    clearCart.addEventListener("click", () => {
-      // remove : Don't Repeat Yourself (DRY)
-      cart.forEach((item) => this.removeCartItem(item.id));
-    });
+    clearCart.addEventListener("click", () => this.clearCart());
+  }
+
+  clearCart() {
+    // remove : Don't Repeat Yourself (DRY)
+    cart.forEach((item) => this.removeCartItem(item.id));
+
+    // remove cart content children :
+    while (cartContent.children.length) cartContent.children[0].remove();
+
+    closeModalFunction();
   }
 
   removeCartItem(id) {
@@ -144,6 +151,15 @@ class UI {
 
     // update storage
     Storage.saveCart(cart);
+
+    // get add to cart btns => update text and disable
+    this.getSingleButton(id);
+  }
+
+  getSingleButton(id) {
+    const button = buttonsDOM.find((btn) => Number(btn.dataset.id) === id);
+    button.innerText = "add to cart";
+    button.disabled = false;
   }
 }
 
