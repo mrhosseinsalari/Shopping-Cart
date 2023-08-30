@@ -106,7 +106,7 @@ class UI {
       <h4>${cartItem.title}</h4>
       <h5>$ ${cartItem.price}</h5>
     </div>
-    <div class="cart-item-conteoller">
+    <div class="cart-item-controller">
       <i class="fas fa-chevron-up" data-id=${cartItem.id}></i>
       <p>${cartItem.quantity}</p>
       <i class="fas fa-chevron-down" data-id=${cartItem.id}></i>
