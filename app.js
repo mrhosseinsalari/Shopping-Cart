@@ -137,9 +137,7 @@ class UI {
         const addQuantity = event.target;
 
         // get item from cart
-        const addedItem = cart.find(
-          (cItem) => cItem.id === Number(addQuantity.dataset.id)
-        );
+        const addedItem = cart.find((c) => c.id == addQuantity.dataset.id);
         addedItem.quantity++;
 
         // update cart value
@@ -150,6 +148,39 @@ class UI {
 
         // update cart quantity in UI
         addQuantity.nextElementSibling.innerText = addedItem.quantity;
+      } else if (event.target.classList.contains("fa-trash-alt")) {
+        const removeItem = event.target;
+
+        // remove from cartItem
+        const _removedItem = cart.find((c) => c.id == removeItem.dataset.id);
+        this.removeCartItem(_removedItem.id);
+
+        // remove item from DOM
+        cartContent.removeChild(removeItem.parentElement);
+      } else if (event.target.classList.contains("fa-chevron-down")) {
+        const subQuantity = event.target;
+
+        // get item from cart
+        const substractedItem = cart.find(
+          (c) => c.id == subQuantity.dataset.id
+        );
+
+        if (substractedItem.quantity === 1) {
+          this.removeCartItem(substractedItem.id);
+          cartContent.removeChild(subQuantity.parentElement.parentElement);
+          return;
+        }
+
+        substractedItem.quantity--;
+
+        // update cart value
+        this.setCartValue(cart);
+
+        // save cart
+        Storage.saveCart(cart);
+
+        // update cart quantity in UI
+        subQuantity.previousElementSibling.innerText = substractedItem.quantity;
       }
     });
   }
